@@ -1,98 +1,357 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+// app/(tabs)/index.tsx
+import { useRouter } from "expo-router";
+import React, { useMemo, useState } from "react";
+import
+  {
+    Image,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
+    useColorScheme,
+  } from "react-native";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { Button } from "@/ui/components/Button";
+import { Card } from "../../src/ui/components/Card";
+import { Screen } from "../../src/ui/components/Screen";
+import { SectionHeader } from "../../src/ui/components/SectionHeader";
+
+function useTextColors() {
+  const scheme = useColorScheme();
+  const isDark = scheme === "dark";
+  return {
+    text: isDark ? "#EAF1FF" : "#111111",
+    subtext: isDark ? "#A9B6CC" : "#555555",
+    muted: isDark ? "#8EA0BA" : "#777777",
+    border: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)",
+    card: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
+    chipBg: isDark ? "rgba(0,0,0,0.55)" : "rgba(0,0,0,0.55)",
+  };
+}
+
+type StatProps = { label: string; value: string };
+
+function Stat({ label, value }: StatProps) {
+  const { text, muted } = useTextColors();
+  return (
+    <Card style={styles.statCard}>
+      <Text style={[styles.statValue, { color: text }]}>{value}</Text>
+      <Text style={[styles.statLabel, { color: muted }]}>{label}</Text>
+    </Card>
+  );
+}
+
+type TodayJob = {
+  id: string;
+  customerName: string;
+  title: string;
+  time: string;
+  location?: string;
+  imageUrl?: string;
+};
+
+function JobCard({
+  job,
+  onPress,
+}: {
+  job: TodayJob;
+  onPress: () => void;
+}) {
+  const { text, muted, border, card, chipBg } = useTextColors();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      style={[styles.jobCard, { backgroundColor: card, borderColor: border }]}
+    >
+      <View style={styles.jobImageWrap}>
+        {job.imageUrl ? (
+          <Image source={{ uri: job.imageUrl }} style={styles.jobImage} />
+        ) : (
+          <View style={styles.jobImagePlaceholder}>
+            <Text style={{ color: "rgba(255,255,255,0.75)", fontWeight: "800" }}>
+              No photo
+            </Text>
+          </View>
+        )}
+
+        <View style={[styles.jobChip, { backgroundColor: chipBg, borderColor: border }]}>
+          <Text style={styles.jobChipText}>{job.time}</Text>
+        </View>
+      </View>
+
+      <View style={styles.jobMeta}>
+        <Text numberOfLines={1} style={[styles.jobCustomer, { color: text }]}>
+          {job.customerName}
+        </Text>
+        <Text numberOfLines={1} style={[styles.jobTitle, { color: muted }]}>
+          {job.title}
+        </Text>
+        {job.location ? (
+          <Text numberOfLines={1} style={[styles.jobLocation, { color: muted }]}>
+            {job.location}
+          </Text>
+        ) : null}
+      </View>
+    </Pressable>
+  );
+}
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Wel</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
+  const { text, subtext, muted, border, card } = useTextColors();
+  const [query, setQuery] = useState("");
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  // Mock data for now (swap later with real API / TanStack Query)
+  const todaysJobs: TodayJob[] = useMemo(
+    () => [
+      {
+        id: "1",
+        customerName: "Mike R.",
+        title: "Install Lights",
+        time: "3:00 PM",
+        location: "Pflugerville",
+        imageUrl:
+          "https://images.unsplash.com/photo-1505691723518-36a5ac3b2b24?auto=format&fit=crop&w=1200&q=60",
+      },
+      {
+        id: "2",
+        customerName: "Ashley C.",
+        title: "Quote Follow-up",
+        time: "5:30 PM",
+        location: "Georgetown",
+        imageUrl:
+          "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=60",
+      },
+      {
+        id: "3",
+        customerName: "Brandon K.",
+        title: "Service Call",
+        time: "7:15 PM",
+        location: "Austin",
+      },
+    ],
+    []
+  );
+
+  const filteredJobs = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return todaysJobs;
+    return todaysJobs.filter((j) => {
+      return (
+        j.customerName.toLowerCase().includes(q) ||
+        j.title.toLowerCase().includes(q) ||
+        (j.location?.toLowerCase().includes(q) ?? false)
+      );
+    });
+  }, [todaysJobs, query]);
+
+  return (
+    <Screen>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={[styles.title, { color: text }]}>Dashboard</Text>
+        <Text style={[styles.subtitle, { color: subtext }]}>
+          Overview of jobs, customers, and messages
+        </Text>
+      </View>
+
+      {/* Search (optional but feels "product") */}
+      <View style={[styles.searchWrap, { backgroundColor: card, borderColor: border }]}>
+        <TextInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder="Search jobs, customers, cities…"
+          placeholderTextColor={muted}
+          style={[styles.searchInput, { color: text }]}
+          returnKeyType="search"
+        />
+        {!!query && (
+          <Pressable onPress={() => setQuery("")} hitSlop={10}>
+            <Text style={{ color: muted, fontWeight: "800" }}>✕</Text>
+          </Pressable>
+        )}
+      </View>
+
+      {/* Quick Stats */}
+      <SectionHeader title="Quick Stats" />
+      <View style={styles.row}>
+        <View style={styles.flex1}>
+          <Stat label="Open Jobs" value="4" />
+        </View>
+        <View style={[styles.flex1, styles.gutter]}>
+          <Stat label="Today" value="2" />
+        </View>
+        <View style={styles.flex1}>
+          <Stat label="Unread" value="3" />
+        </View>
+      </View>
+
+
+
+
+{/* Quick Actions */}
+      <SectionHeader title="Quick Actions" />
+      <Button
+        title="+ New Job"
+        onPress={() => router.push("/(tabs)/calendar")}
+        style={{ marginBottom: 10 }}
+      />
+      <Button
+        title="+ Message"
+        variant="secondary"
+        onPress={() => router.push("/(tabs)/inbox")}
+      />
+
+
+
+
+
+
+       {/* Today's Jobs */}
+      <SectionHeader
+        title="Today's Jobs"
+        actionText="View all"
+        onPressAction={() => router.push("/(tabs)/calendar")}
+      />
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.jobsRow}
+      >
+        {filteredJobs.map((job) => (
+          <JobCard
+            key={job.id}
+            job={job}
+            onPress={() => router.push("/(tabs)/calendar")}
+            // later: router.push(`/jobs/${job.id}`)
+          />
+        ))}
+        {filteredJobs.length === 0 ? (
+          <View style={[styles.emptyState, { borderColor: border, backgroundColor: card }]}>
+            <Text style={{ color: text, fontWeight: "800" }}>No matches</Text>
+            <Text style={{ color: muted, marginTop: 4 }}>
+              Try searching by name, city, or job type.
+            </Text>
+          </View>
+        ) : null}
+      </ScrollView>
+
+      
+
+     
+
+      {/* Recent Customers */}
+      {/* <SectionHeader title="Recent Customers" actionText="Search" onPressAction={() => {}} />
+      <Card>
+        <Text style={[styles.listItem, { color: text }]}>Mike R. – Round Rock</Text>
+        <Text style={[styles.listItem, { color: text }]}>Ashley C. – Austin</Text>
+        <Text style={[styles.listItem, { color: text }]}>Brandon K. – Cedar Park</Text>
+      </Card> */}
+
+      {/* <View style={{ height: 18 }} /> */}
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  header: { marginBottom: 12 },
+  title: { fontSize: 28, fontWeight: "700" },
+  subtitle: { marginTop: 6, fontSize: 14 },
+
+  searchWrap: {
+    height: 46,
+    borderRadius: 14,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    marginBottom: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: "600",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+
+  row: { flexDirection: "row", marginBottom: 16 },
+  flex1: { flex: 1 },
+  gutter: { marginHorizontal: 10 },
+
+  statCard: { padding: 14 },
+  statValue: { fontSize: 20, fontWeight: "800" },
+  statLabel: { marginTop: 4, fontSize: 12, fontWeight: "600" },
+
+  jobsRow: {
+    paddingVertical: 6,
+    paddingRight: 6,
+    gap: 12,
   },
+
+  jobCard: {
+    width: 178,
+    borderRadius: 16,
+    overflow: "hidden",
+    borderWidth: 1,
+  },
+
+  jobImageWrap: {
+    height: 112,
+  },
+  jobImage: {
+    width: "100%",
+    height: "100%",
+  },
+  jobImagePlaceholder: {
+    flex: 1,
+    backgroundColor: "rgba(255,255,255,0.08)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  jobMeta: {
+    padding: 10,
+    gap: 3,
+  },
+  jobCustomer: {
+    fontSize: 14,
+    fontWeight: "900",
+  },
+  jobTitle: {
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  jobLocation: {
+    fontSize: 12,
+    fontWeight: "600",
+    opacity: 0.9,
+  },
+
+  jobChip: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    borderWidth: 1,
+  },
+  jobChipText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "900",
+  },
+
+  emptyState: {
+    width: 220,
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 12,
+    justifyContent: "center",
+  },
+
+  listItem: { fontSize: 14, marginBottom: 8 },
 });

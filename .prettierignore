@@ -1,0 +1,14 @@
+node_modules
+.expo
+.expo-shared
+build
+dist
+coverage
+*.min.js
+*.bundle
+android
+ios
+.git
+.gitignore
+yarn.lock
+package-lock.json
