@@ -1,33 +1,33 @@
 // app/(tabs)/index.tsx
-import { useRouter } from "expo-router";
-import React, { useMemo, useState } from "react";
-import
-  {
-    Image,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
-    useColorScheme,
-  } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useMemo, useState } from 'react';
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  useColorScheme,
+} from 'react-native';
 
-import { Button } from "@/ui/components/Button";
-import { Card } from "../../src/ui/components/Card";
-import { Screen } from "../../src/ui/components/Screen";
-import { SectionHeader } from "../../src/ui/components/SectionHeader";
+import { Button } from '@/ui/components/Button';
+import { Card } from '../../src/ui/components/Card';
+import { Screen } from '../../src/ui/components/Screen';
+import { SectionHeader } from '../../src/ui/components/SectionHeader';
 
 function useTextColors() {
   const scheme = useColorScheme();
-  const isDark = scheme === "dark";
+  const isDark = scheme === 'dark';
   return {
-    text: isDark ? "#EAF1FF" : "#111111",
-    subtext: isDark ? "#A9B6CC" : "#555555",
-    muted: isDark ? "#8EA0BA" : "#777777",
-    border: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)",
-    card: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
-    chipBg: isDark ? "rgba(0,0,0,0.55)" : "rgba(0,0,0,0.55)",
+    text: isDark ? '#EAF1FF' : '#111111',
+    subtext: isDark ? '#A9B6CC' : '#555555',
+    muted: isDark ? '#8EA0BA' : '#777777',
+    border: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.08)',
+    card: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+    chipBg: isDark ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.55)',
   };
 }
 
@@ -52,13 +52,7 @@ type TodayJob = {
   imageUrl?: string;
 };
 
-function JobCard({
-  job,
-  onPress,
-}: {
-  job: TodayJob;
-  onPress: () => void;
-}) {
+function JobCard({ job, onPress }: { job: TodayJob; onPress: () => void }) {
   const { text, muted, border, card, chipBg } = useTextColors();
 
   return (
@@ -71,9 +65,7 @@ function JobCard({
           <Image source={{ uri: job.imageUrl }} style={styles.jobImage} />
         ) : (
           <View style={styles.jobImagePlaceholder}>
-            <Text style={{ color: "rgba(255,255,255,0.75)", fontWeight: "800" }}>
-              No photo
-            </Text>
+            <Text style={{ color: 'rgba(255,255,255,0.75)', fontWeight: '800' }}>No photo</Text>
           </View>
         )}
 
@@ -102,44 +94,44 @@ function JobCard({
 export default function HomeScreen() {
   const router = useRouter();
   const { text, subtext, muted, border, card } = useTextColors();
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
 
   // Mock data for now (swap later with real API / TanStack Query)
   const todaysJobs: TodayJob[] = useMemo(
     () => [
       {
-        id: "1",
-        customerName: "Mike R.",
-        title: "Install Lights",
-        time: "3:00 PM",
-        location: "Pflugerville",
+        id: '1',
+        customerName: 'Mike R.',
+        title: 'Install Lights',
+        time: '3:00 PM',
+        location: 'Pflugerville',
         imageUrl:
-          "https://images.unsplash.com/photo-1505691723518-36a5ac3b2b24?auto=format&fit=crop&w=1200&q=60",
+          'https://images.unsplash.com/photo-1505691723518-36a5ac3b2b24?auto=format&fit=crop&w=1200&q=60',
       },
       {
-        id: "2",
-        customerName: "Ashley C.",
-        title: "Quote Follow-up",
-        time: "5:30 PM",
-        location: "Georgetown",
+        id: '2',
+        customerName: 'Ashley C.',
+        title: 'Quote Follow-up',
+        time: '5:30 PM',
+        location: 'Georgetown',
         imageUrl:
-          "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=60",
+          'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=60',
       },
       {
-        id: "3",
-        customerName: "Brandon K.",
-        title: "Service Call",
-        time: "7:15 PM",
-        location: "Austin",
+        id: '3',
+        customerName: 'Brandon K.',
+        title: 'Service Call',
+        time: '7:15 PM',
+        location: 'Austin',
       },
     ],
-    []
+    [],
   );
 
   const filteredJobs = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return todaysJobs;
-    return todaysJobs.filter((j) => {
+    return todaysJobs.filter(j => {
       return (
         j.customerName.toLowerCase().includes(q) ||
         j.title.toLowerCase().includes(q) ||
@@ -151,11 +143,21 @@ export default function HomeScreen() {
   return (
     <Screen>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: text }]}>Dashboard</Text>
-        <Text style={[styles.subtitle, { color: subtext }]}>
-          Overview of jobs, customers, and messages
-        </Text>
+      <View style={styles.headerRow}>
+        <View style={{ flex: 1 }}>
+          <Text style={[styles.title, { color: text }]}>Your Company</Text>
+          <Text style={[styles.subtitle, { color: subtext }]}>
+            Overview of jobs, customers, and messages
+          </Text>
+        </View>
+
+        <Pressable
+          onPress={() => router.push('/(tabs)/settings')}
+          style={styles.avatarBtn}
+          hitSlop={10}
+        >
+          <Ionicons name="person-circle-outline" size={34} color={text} />
+        </Pressable>
       </View>
 
       {/* Search (optional but feels "product") */}
@@ -169,8 +171,8 @@ export default function HomeScreen() {
           returnKeyType="search"
         />
         {!!query && (
-          <Pressable onPress={() => setQuery("")} hitSlop={10}>
-            <Text style={{ color: muted, fontWeight: "800" }}>✕</Text>
+          <Pressable onPress={() => setQuery('')} hitSlop={10}>
+            <Text style={{ color: muted, fontWeight: '800' }}>✕</Text>
           </Pressable>
         )}
       </View>
@@ -189,59 +191,43 @@ export default function HomeScreen() {
         </View>
       </View>
 
-
-
-
-{/* Quick Actions */}
+      {/* Quick Actions */}
       <SectionHeader title="Quick Actions" />
       <Button
         title="+ New Job"
-        onPress={() => router.push("/(tabs)/calendar")}
+        onPress={() => router.push('/jobs/newjob')}
         style={{ marginBottom: 10 }}
       />
-      <Button
-        title="+ Message"
-        variant="secondary"
-        onPress={() => router.push("/(tabs)/inbox")}
-      />
+      <Button title="+ Calendar" variant="secondary" onPress={() => router.push('/(tabs)/inbox')} />
 
-
-
-
-
-
-       {/* Today's Jobs */}
+      {/* Today's Jobs */}
       <SectionHeader
         title="Today's Jobs"
         actionText="View all"
-        onPressAction={() => router.push("/(tabs)/calendar")}
+        onPressAction={() => router.push('/jobs')}
       />
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.jobsRow}
       >
-        {filteredJobs.map((job) => (
+        {filteredJobs.map(job => (
           <JobCard
             key={job.id}
             job={job}
-            onPress={() => router.push("/(tabs)/calendar")}
+            onPress={() => router.push('/(tabs)/calendar')}
             // later: router.push(`/jobs/${job.id}`)
           />
         ))}
         {filteredJobs.length === 0 ? (
           <View style={[styles.emptyState, { borderColor: border, backgroundColor: card }]}>
-            <Text style={{ color: text, fontWeight: "800" }}>No matches</Text>
+            <Text style={{ color: text, fontWeight: '800' }}>No matches</Text>
             <Text style={{ color: muted, marginTop: 4 }}>
               Try searching by name, city, or job type.
             </Text>
           </View>
         ) : null}
       </ScrollView>
-
-      
-
-     
 
       {/* Recent Customers */}
       {/* <SectionHeader title="Recent Customers" actionText="Search" onPressAction={() => {}} />
@@ -258,8 +244,18 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   header: { marginBottom: 12 },
-  title: { fontSize: 28, fontWeight: "700" },
+  title: { fontSize: 28, fontWeight: '700' },
   subtitle: { marginTop: 6, fontSize: 14 },
+
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  avatarBtn: {
+    marginLeft: 12,
+  },
 
   searchWrap: {
     height: 46,
@@ -267,23 +263,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 12,
     marginBottom: 14,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 10,
   },
   searchInput: {
     flex: 1,
     fontSize: 15,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 
-  row: { flexDirection: "row", marginBottom: 16 },
+  row: { flexDirection: 'row', marginBottom: 16 },
   flex1: { flex: 1 },
   gutter: { marginHorizontal: 10 },
 
   statCard: { padding: 14 },
-  statValue: { fontSize: 20, fontWeight: "800" },
-  statLabel: { marginTop: 4, fontSize: 12, fontWeight: "600" },
+  statValue: { fontSize: 20, fontWeight: '800' },
+  statLabel: { marginTop: 4, fontSize: 12, fontWeight: '600' },
 
   jobsRow: {
     paddingVertical: 6,
@@ -294,7 +290,7 @@ const styles = StyleSheet.create({
   jobCard: {
     width: 178,
     borderRadius: 16,
-    overflow: "hidden",
+    overflow: 'hidden',
     borderWidth: 1,
   },
 
@@ -302,14 +298,14 @@ const styles = StyleSheet.create({
     height: 112,
   },
   jobImage: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   jobImagePlaceholder: {
     flex: 1,
-    backgroundColor: "rgba(255,255,255,0.08)",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   jobMeta: {
@@ -318,20 +314,20 @@ const styles = StyleSheet.create({
   },
   jobCustomer: {
     fontSize: 14,
-    fontWeight: "900",
+    fontWeight: '900',
   },
   jobTitle: {
     fontSize: 12,
-    fontWeight: "700",
+    fontWeight: '700',
   },
   jobLocation: {
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: '600',
     opacity: 0.9,
   },
 
   jobChip: {
-    position: "absolute",
+    position: 'absolute',
     top: 8,
     right: 8,
     paddingHorizontal: 10,
@@ -340,9 +336,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   jobChipText: {
-    color: "white",
+    color: 'white',
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: '900',
   },
 
   emptyState: {
@@ -350,7 +346,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     padding: 12,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
 
   listItem: { fontSize: 14, marginBottom: 8 },

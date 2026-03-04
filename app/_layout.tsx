@@ -34,14 +34,14 @@ function AuthGate() {
   const { isLoggedIn } = useAuth();
   const segments = useSegments();
 
-  // segments can be empty on first mount — don't redirect yet.
   if (!segments) return null;
 
   const inTabs = segments[0] === "(tabs)";
   const inLogin = segments[0] === "login";
+  const inJobs = segments[0] === "jobs"; // Allow job routes too
 
   if (!isLoggedIn && !inLogin) return <Redirect href="/login" />;
-  if (isLoggedIn && !inTabs) return <Redirect href="/(tabs)" />;
+  if (isLoggedIn && !inTabs && !inJobs) return <Redirect href="/(tabs)" />;
 
   return null;
 }
