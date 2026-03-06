@@ -142,107 +142,98 @@ export default function HomeScreen() {
 
   return (
     <Screen>
-      {/* Header */}
-      <View style={styles.headerRow}>
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.title, { color: text }]}>Your Company</Text>
-          <Text style={[styles.subtitle, { color: subtext }]}>
-            Overview of jobs, customers, and messages
-          </Text>
-        </View>
-
-        <Pressable
-          onPress={() => router.push('/(tabs)/settings')}
-          style={styles.avatarBtn}
-          hitSlop={10}
-        >
-          <Ionicons name="person-circle-outline" size={34} color={text} />
-        </Pressable>
-      </View>
-
-      {/* Search (optional but feels "product") */}
-      <View style={[styles.searchWrap, { backgroundColor: card, borderColor: border }]}>
-        <TextInput
-          value={query}
-          onChangeText={setQuery}
-          placeholder="Search jobs, customers, cities…"
-          placeholderTextColor={muted}
-          style={[styles.searchInput, { color: text }]}
-          returnKeyType="search"
-        />
-        {!!query && (
-          <Pressable onPress={() => setQuery('')} hitSlop={10}>
-            <Text style={{ color: muted, fontWeight: '800' }}>✕</Text>
-          </Pressable>
-        )}
-      </View>
-
-      {/* Quick Stats */}
-      <SectionHeader title="Quick Stats" />
-      <View style={styles.row}>
-        <View style={styles.flex1}>
-          <Stat label="Open Jobs" value="4" />
-        </View>
-        <View style={[styles.flex1, styles.gutter]}>
-          <Stat label="Today" value="2" />
-        </View>
-        <View style={styles.flex1}>
-          <Stat label="Unread" value="3" />
-        </View>
-      </View>
-
-      {/* Quick Actions */}
-      <SectionHeader title="Quick Actions" />
-      <Button
-        title="+ New Job"
-        onPress={() => router.push('/jobs/newjob')}
-        style={{ marginBottom: 10 }}
-      />
-      <Button title="+ Calendar" variant="secondary" onPress={() => router.push('/(tabs)/inbox')} />
-
-      {/* Today's Jobs */}
-      <SectionHeader
-        title="Today's Jobs"
-        actionText="View all"
-        onPressAction={() => router.push('/jobs')}
-      />
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.jobsRow}
-      >
-        {filteredJobs.map(job => (
-          <JobCard
-            key={job.id}
-            job={job}
-            onPress={() => router.push('/(tabs)/calendar')}
-            // later: router.push(`/jobs/${job.id}`)
-          />
-        ))}
-        {filteredJobs.length === 0 ? (
-          <View style={[styles.emptyState, { borderColor: border, backgroundColor: card }]}>
-            <Text style={{ color: text, fontWeight: '800' }}>No matches</Text>
-            <Text style={{ color: muted, marginTop: 4 }}>
-              Try searching by name, city, or job type.
+      <View style={styles.screen}>
+        {/* Header */}
+        <View style={styles.headerRow}>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.title, { color: text }]}>Your Company</Text>
+            <Text style={[styles.subtitle, { color: subtext }]}>
+              Overview of jobs, customers, and messages
             </Text>
           </View>
-        ) : null}
-      </ScrollView>
 
-      {/* Recent Customers */}
-      {/* <SectionHeader title="Recent Customers" actionText="Search" onPressAction={() => {}} />
-      <Card>
-        <Text style={[styles.listItem, { color: text }]}>Mike R. – Round Rock</Text>
-        <Text style={[styles.listItem, { color: text }]}>Ashley C. – Austin</Text>
-        <Text style={[styles.listItem, { color: text }]}>Brandon K. – Cedar Park</Text>
-      </Card> */}
+          <Pressable
+            onPress={() => router.push('/(tabs)/settings')}
+            style={styles.avatarBtn}
+            hitSlop={10}
+          >
+            <Ionicons name="person-circle-outline" size={34} color={text} />
+          </Pressable>
+        </View>
 
-      {/* <View style={{ height: 18 }} /> */}
+        {/* Search (optional but feels "product") */}
+        <View style={[styles.searchWrap, { backgroundColor: card, borderColor: border }]}>
+          <TextInput
+            value={query}
+            onChangeText={setQuery}
+            placeholder="Search jobs, customers, cities…"
+            placeholderTextColor={muted}
+            style={[styles.searchInput, { color: text }]}
+            returnKeyType="search"
+          />
+          {!!query && (
+            <Pressable onPress={() => setQuery('')} hitSlop={10}>
+              <Text style={{ color: muted, fontWeight: '800' }}>✕</Text>
+            </Pressable>
+          )}
+        </View>
+
+        {/* Quick Stats */}
+        <SectionHeader title="Quick Stats" />
+        <View style={styles.row}>
+          <View style={styles.flex1}>
+            <Stat label="Open Jobs" value="4" />
+          </View>
+          <View style={[styles.flex1, styles.gutter]}>
+            <Stat label="Today" value="2" />
+          </View>
+          <View style={styles.flex1}>
+            <Stat label="Unread" value="3" />
+          </View>
+        </View>
+
+        {/* Quick Actions */}
+        <Button
+          title="+ New Customer"
+          onPress={() => router.push('/customers/new')}
+          style={{ marginBottom: 0 }}
+        />
+
+        {/* Today's Jobs */}
+        <SectionHeader
+          title="Today's Jobs"
+          actionText="View all"
+          onPressAction={() => router.push('/jobs')}
+        />
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.jobsRow}
+        >
+          {filteredJobs.map(job => (
+            <JobCard
+              key={job.id}
+              job={job}
+              onPress={() => router.push('/(tabs)/calendar')}
+              // later: router.push(`/jobs/${job.id}`)
+            />
+          ))}
+          {filteredJobs.length === 0 ? (
+            <View style={[styles.emptyState, { borderColor: border, backgroundColor: card }]}>
+              <Text style={{ color: text, fontWeight: '800' }}>No matches</Text>
+              <Text style={{ color: muted, marginTop: 4 }}>
+                Try searching by name, city, or job type.
+              </Text>
+            </View>
+          ) : null}
+        </ScrollView>
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: { marginHorizontal: 12 },
   header: { marginBottom: 12 },
   title: { fontSize: 28, fontWeight: '700' },
   subtitle: { marginTop: 6, fontSize: 14 },
@@ -254,7 +245,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   avatarBtn: {
-    marginLeft: 12,
+    padding: 8,
   },
 
   searchWrap: {

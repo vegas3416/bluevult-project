@@ -1,23 +1,14 @@
 // src/features/jobs/screens/NewJobScreen.tsx
-import { useRouter } from "expo-router";
-import React, { useMemo, useState } from "react";
-import
-    {
-        Alert,
-        Pressable,
-        StyleSheet,
-        Text,
-        TextInput,
-        View,
-        useColorScheme,
-    } from "react-native";
+import { useRouter } from 'expo-router';
+import React, { useMemo, useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View, useColorScheme } from 'react-native';
 
-import { Button } from "../../../ui/components/Button";
-import { Card } from "../../../ui/components/Card";
-import { Screen } from "../../../ui/components/Screen";
-import { SectionHeader } from "../../../ui/components/SectionHeader";
+import { Button } from '../../../ui/components/Button';
+import { Card } from '../../../ui/components/Card';
+import { Screen } from '../../../ui/components/Screen';
+import { SectionHeader } from '../../../ui/components/SectionHeader';
 
-type JobType = "Install" | "Service" | "Quote" | "Follow-up";
+type JobType = 'Install' | 'Service' | 'Quote' | 'Follow-up';
 
 type Customer = {
   id: string;
@@ -28,7 +19,7 @@ type Customer = {
 
 type NewJobDraft = {
   // Step 1 (customer)
-  customerMode: "existing" | "new";
+  customerMode: 'existing' | 'new';
   customerId?: string;
   customerName?: string;
   customerCity?: string;
@@ -47,15 +38,15 @@ type NewJobDraft = {
 
 function useColors() {
   const scheme = useColorScheme();
-  const isDark = scheme === "dark";
+  const isDark = scheme === 'dark';
   return {
-    bg: isDark ? "#0B0B0F" : "#FFFFFF",
-    text: isDark ? "#EAF1FF" : "#111111",
-    subtext: isDark ? "#A9B6CC" : "#555555",
-    muted: isDark ? "#8EA0BA" : "#777777",
-    border: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.08)",
-    chipBg: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
-    chipActiveBg: isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)",
+    bg: isDark ? '#0B0B0F' : '#FFFFFF',
+    text: isDark ? '#EAF1FF' : '#111111',
+    subtext: isDark ? '#A9B6CC' : '#555555',
+    muted: isDark ? '#8EA0BA' : '#777777',
+    border: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.08)',
+    chipBg: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+    chipActiveBg: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
   };
 }
 
@@ -71,20 +62,12 @@ function StepPill({ label, active }: { label: string; active: boolean }) {
         },
       ]}
     >
-      <Text style={{ color: c.text, fontWeight: "800", fontSize: 12 }}>{label}</Text>
+      <Text style={{ color: c.text, fontWeight: '800', fontSize: 12 }}>{label}</Text>
     </View>
   );
 }
 
-function Chip({
-  label,
-  active,
-  onPress,
-}: {
-  label: string;
-  active: boolean;
-  onPress: () => void;
-}) {
+function Chip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
   const c = useColors();
   return (
     <Pressable
@@ -97,7 +80,7 @@ function Chip({
         },
       ]}
     >
-      <Text style={{ color: c.text, fontWeight: "800" }}>{label}</Text>
+      <Text style={{ color: c.text, fontWeight: '800' }}>{label}</Text>
     </Pressable>
   );
 }
@@ -106,11 +89,9 @@ function RowLabel({ title, subtitle }: { title: string; subtitle?: string }) {
   const c = useColors();
   return (
     <View style={{ marginBottom: 10 }}>
-      <Text style={{ color: c.text, fontSize: 16, fontWeight: "900" }}>{title}</Text>
+      <Text style={{ color: c.text, fontSize: 16, fontWeight: '900' }}>{title}</Text>
       {subtitle ? (
-        <Text style={{ color: c.subtext, marginTop: 4, fontWeight: "600" }}>
-          {subtitle}
-        </Text>
+        <Text style={{ color: c.subtext, marginTop: 4, fontWeight: '600' }}>{subtitle}</Text>
       ) : null}
     </View>
   );
@@ -132,7 +113,7 @@ function Input({
   const c = useColors();
   return (
     <View style={{ marginBottom: 12 }}>
-      <Text style={{ color: c.muted, fontWeight: "800", marginBottom: 6 }}>{label}</Text>
+      <Text style={{ color: c.muted, fontWeight: '800', marginBottom: 6 }}>{label}</Text>
       <TextInput
         value={value}
         onChangeText={onChangeText}
@@ -145,7 +126,7 @@ function Input({
             borderColor: c.border,
             backgroundColor: c.chipBg,
             height: multiline ? 92 : 46,
-            textAlignVertical: multiline ? "top" : "center",
+            textAlignVertical: multiline ? 'top' : 'center',
           },
         ]}
         multiline={multiline}
@@ -160,20 +141,20 @@ export function NewJobScreen() {
 
   const [step, setStep] = useState<0 | 1 | 2>(0);
 
-  const [customerSearch, setCustomerSearch] = useState("");
+  const [customerSearch, setCustomerSearch] = useState('');
 
   // Placeholder data
   const customers: Customer[] = useMemo(
     () => [
-      { id: "c1", name: "Mike R.", city: "Round Rock", address: "123 Oak St" },
-      { id: "c2", name: "Ashley C.", city: "Austin", address: "88 Barton Rd" },
-      { id: "c3", name: "Brandon K.", city: "Cedar Park" },
+      { id: 'c1', name: 'Mike R.', city: 'Round Rock', address: '123 Oak St' },
+      { id: 'c2', name: 'Ashley C.', city: 'Austin', address: '88 Barton Rd' },
+      { id: 'c3', name: 'Brandon K.', city: 'Cedar Park' },
     ],
-    []
+    [],
   );
 
   const [draft, setDraft] = useState<NewJobDraft>({
-    customerMode: "existing",
+    customerMode: 'existing',
     scheduled: false,
     durationMins: 90,
   });
@@ -182,39 +163,39 @@ export function NewJobScreen() {
     const q = customerSearch.trim().toLowerCase();
     if (!q) return customers;
     return customers.filter(
-      (x) =>
+      x =>
         x.name.toLowerCase().includes(q) ||
         x.city.toLowerCase().includes(q) ||
-        (x.address?.toLowerCase().includes(q) ?? false)
+        (x.address?.toLowerCase().includes(q) ?? false),
     );
   }, [customers, customerSearch]);
 
   function setDraftPatch(patch: Partial<NewJobDraft>) {
-    setDraft((prev) => ({ ...prev, ...patch }));
+    setDraft(prev => ({ ...prev, ...patch }));
   }
 
   function canGoNext(): { ok: boolean; message?: string } {
     if (step === 0) {
-      if (draft.customerMode === "existing") {
-        if (!draft.customerId) return { ok: false, message: "Pick an existing customer." };
+      if (draft.customerMode === 'existing') {
+        if (!draft.customerId) return { ok: false, message: 'Pick an existing customer.' };
       } else {
-        if (!draft.customerName?.trim()) return { ok: false, message: "Enter customer name." };
-        if (!draft.customerCity?.trim()) return { ok: false, message: "Enter customer city." };
+        if (!draft.customerName?.trim()) return { ok: false, message: 'Enter customer name.' };
+        if (!draft.customerCity?.trim()) return { ok: false, message: 'Enter customer city.' };
       }
       return { ok: true };
     }
 
     if (step === 1) {
-      if (!draft.jobType) return { ok: false, message: "Select a job type." };
-      if (!draft.address?.trim()) return { ok: false, message: "Enter an address." };
+      if (!draft.jobType) return { ok: false, message: 'Select a job type.' };
+      if (!draft.address?.trim()) return { ok: false, message: 'Enter an address.' };
       return { ok: true };
     }
 
     // step 2 (schedule) is optional unless scheduled=true
     if (step === 2) {
       if (draft.scheduled) {
-        if (!draft.date?.trim()) return { ok: false, message: "Enter a date." };
-        if (!draft.time?.trim()) return { ok: false, message: "Enter a time." };
+        if (!draft.date?.trim()) return { ok: false, message: 'Enter a date.' };
+        if (!draft.time?.trim()) return { ok: false, message: 'Enter a time.' };
       }
       return { ok: true };
     }
@@ -225,10 +206,10 @@ export function NewJobScreen() {
   function onNext() {
     const check = canGoNext();
     if (!check.ok) {
-      Alert.alert("Missing info", check.message ?? "Please complete this step.");
+      Alert.alert('Missing info', check.message ?? 'Please complete this step.');
       return;
     }
-    setStep((s) => (s === 2 ? 2 : ((s + 1) as any)));
+    setStep(s => (s === 2 ? 2 : ((s + 1) as any)));
   }
 
   function onBack() {
@@ -236,13 +217,13 @@ export function NewJobScreen() {
       router.back();
       return;
     }
-    setStep((s) => ((s - 1) as any));
+    setStep(s => (s - 1) as any);
   }
 
   function onCreate() {
     const check = canGoNext();
     if (!check.ok) {
-      Alert.alert("Missing info", check.message ?? "Please complete this step.");
+      Alert.alert('Missing info', check.message ?? 'Please complete this step.');
       return;
     }
 
@@ -253,28 +234,28 @@ export function NewJobScreen() {
       createdAt: new Date().toISOString(),
     };
 
-    Alert.alert("Job created (placeholder)", JSON.stringify(payload, null, 2), [
+    Alert.alert('Job created (placeholder)', JSON.stringify(payload, null, 2), [
       {
-        text: "View Jobs",
-        onPress: () => router.replace("/jobs"),
+        text: 'View Jobs',
+        onPress: () => router.replace('/jobs'),
       },
       {
-        text: "Go Home",
-        onPress: () => router.replace("/(tabs)"),
+        text: 'Go Home',
+        onPress: () => router.replace('/(tabs)'),
       },
-      { text: "OK" },
+      { text: 'OK' },
     ]);
   }
 
   // Auto-fill address if choosing an existing customer and they have address
   function selectCustomer(cust: Customer) {
     setDraftPatch({
-      customerMode: "existing",
+      customerMode: 'existing',
       customerId: cust.id,
       // also store customer name/city for preview convenience (optional)
       customerName: cust.name,
       customerCity: cust.city,
-      address: cust.address ?? draft.address ?? "",
+      address: cust.address ?? draft.address ?? '',
     });
   }
 
@@ -302,25 +283,25 @@ export function NewJobScreen() {
               subtitle="Choose an existing customer or add a new one."
             />
 
-            <View style={{ flexDirection: "row", gap: 10, marginBottom: 12 }}>
+            <View style={{ flexDirection: 'row', gap: 10, marginBottom: 12 }}>
               <Chip
                 label="Existing"
-                active={draft.customerMode === "existing"}
-                onPress={() => setDraftPatch({ customerMode: "existing" })}
+                active={draft.customerMode === 'existing'}
+                onPress={() => setDraftPatch({ customerMode: 'existing' })}
               />
               <Chip
                 label="New"
-                active={draft.customerMode === "new"}
+                active={draft.customerMode === 'new'}
                 onPress={() =>
                   setDraftPatch({
-                    customerMode: "new",
+                    customerMode: 'new',
                     customerId: undefined,
                   })
                 }
               />
             </View>
 
-            {draft.customerMode === "existing" ? (
+            {draft.customerMode === 'existing' ? (
               <>
                 <Input
                   label="Search customers"
@@ -330,7 +311,7 @@ export function NewJobScreen() {
                 />
 
                 <View style={{ gap: 10 }}>
-                  {filteredCustomers.map((cust) => {
+                  {filteredCustomers.map(cust => {
                     const active = draft.customerId === cust.id;
                     return (
                       <Pressable
@@ -345,16 +326,14 @@ export function NewJobScreen() {
                         ]}
                       >
                         <View style={{ flex: 1 }}>
-                          <Text style={{ color: c.text, fontWeight: "900" }}>
-                            {cust.name}
-                          </Text>
-                          <Text style={{ color: c.muted, fontWeight: "700", marginTop: 2 }}>
+                          <Text style={{ color: c.text, fontWeight: '900' }}>{cust.name}</Text>
+                          <Text style={{ color: c.muted, fontWeight: '700', marginTop: 2 }}>
                             {cust.city}
-                            {cust.address ? ` • ${cust.address}` : ""}
+                            {cust.address ? ` • ${cust.address}` : ''}
                           </Text>
                         </View>
-                        <Text style={{ color: c.muted, fontWeight: "900" }}>
-                          {active ? "✓" : ""}
+                        <Text style={{ color: c.muted, fontWeight: '900' }}>
+                          {active ? '✓' : ''}
                         </Text>
                       </Pressable>
                     );
@@ -365,14 +344,14 @@ export function NewJobScreen() {
               <>
                 <Input
                   label="Customer name"
-                  value={draft.customerName ?? ""}
-                  onChangeText={(v) => setDraftPatch({ customerName: v })}
+                  value={draft.customerName ?? ''}
+                  onChangeText={v => setDraftPatch({ customerName: v })}
                   placeholder="e.g. John Smith"
                 />
                 <Input
                   label="City"
-                  value={draft.customerCity ?? ""}
-                  onChangeText={(v) => setDraftPatch({ customerCity: v })}
+                  value={draft.customerCity ?? ''}
+                  onChangeText={v => setDraftPatch({ customerCity: v })}
                   placeholder="e.g. Pflugerville"
                 />
               </>
@@ -390,8 +369,8 @@ export function NewJobScreen() {
               subtitle="Pick a job type and add the basics."
             />
 
-            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10, marginBottom: 12 }}>
-              {(["Install", "Service", "Quote", "Follow-up"] as JobType[]).map((t) => (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 12 }}>
+              {(['Install', 'Service', 'Quote', 'Follow-up'] as JobType[]).map(t => (
                 <Chip
                   key={t}
                   label={t}
@@ -403,15 +382,15 @@ export function NewJobScreen() {
 
             <Input
               label="Address"
-              value={draft.address ?? ""}
-              onChangeText={(v) => setDraftPatch({ address: v })}
+              value={draft.address ?? ''}
+              onChangeText={v => setDraftPatch({ address: v })}
               placeholder="Street address (placeholder)"
             />
 
             <Input
               label="Notes"
-              value={draft.notes ?? ""}
-              onChangeText={(v) => setDraftPatch({ notes: v })}
+              value={draft.notes ?? ''}
+              onChangeText={v => setDraftPatch({ notes: v })}
               placeholder="Anything important for the crew?"
               multiline
             />
@@ -428,7 +407,7 @@ export function NewJobScreen() {
               subtitle="You can leave it unscheduled and set the time later."
             />
 
-            <View style={{ flexDirection: "row", gap: 10, marginBottom: 12 }}>
+            <View style={{ flexDirection: 'row', gap: 10, marginBottom: 12 }}>
               <Chip
                 label="Not scheduled"
                 active={!draft.scheduled}
@@ -445,27 +424,27 @@ export function NewJobScreen() {
               <>
                 <Input
                   label="Date"
-                  value={draft.date ?? ""}
-                  onChangeText={(v) => setDraftPatch({ date: v })}
+                  value={draft.date ?? ''}
+                  onChangeText={v => setDraftPatch({ date: v })}
                   placeholder="YYYY-MM-DD (placeholder)"
                 />
                 <Input
                   label="Time"
-                  value={draft.time ?? ""}
-                  onChangeText={(v) => setDraftPatch({ time: v })}
+                  value={draft.time ?? ''}
+                  onChangeText={v => setDraftPatch({ time: v })}
                   placeholder="e.g. 3:00 PM"
                 />
                 <Input
                   label="Duration (minutes)"
                   value={String(draft.durationMins ?? 90)}
-                  onChangeText={(v) =>
-                    setDraftPatch({ durationMins: Number(v.replace(/[^\d]/g, "")) || 0 })
+                  onChangeText={v =>
+                    setDraftPatch({ durationMins: Number(v.replace(/[^\d]/g, '')) || 0 })
                   }
                   placeholder="e.g. 90"
                 />
               </>
             ) : (
-              <Text style={{ color: c.muted, fontWeight: "700" }}>
+              <Text style={{ color: c.muted, fontWeight: '700' }}>
                 No schedule set. This job will still appear in Jobs; you can schedule later.
               </Text>
             )}
@@ -473,17 +452,17 @@ export function NewJobScreen() {
 
           <SectionHeader title="Preview" />
           <Card>
-            <Text style={{ color: c.text, fontWeight: "900", marginBottom: 6 }}>
-              {draft.customerName ?? "(customer)"}
-              {draft.customerCity ? ` • ${draft.customerCity}` : ""}
+            <Text style={{ color: c.text, fontWeight: '900', marginBottom: 6 }}>
+              {draft.customerName ?? '(customer)'}
+              {draft.customerCity ? ` • ${draft.customerCity}` : ''}
             </Text>
-            <Text style={{ color: c.muted, fontWeight: "700", marginBottom: 6 }}>
-              {draft.jobType ?? "(job type)"} • {draft.address ?? "(address)"}
+            <Text style={{ color: c.muted, fontWeight: '700', marginBottom: 6 }}>
+              {draft.jobType ?? '(job type)'} • {draft.address ?? '(address)'}
             </Text>
-            <Text style={{ color: c.muted, fontWeight: "700" }}>
+            <Text style={{ color: c.muted, fontWeight: '700' }}>
               {draft.scheduled
-                ? `Scheduled: ${draft.date ?? ""} at ${draft.time ?? ""} (${draft.durationMins ?? 0}m)`
-                : "Unscheduled"}
+                ? `Scheduled: ${draft.date ?? ''} at ${draft.time ?? ''} (${draft.durationMins ?? 0}m)`
+                : 'Unscheduled'}
             </Text>
           </Card>
         </>
@@ -493,7 +472,7 @@ export function NewJobScreen() {
 
       {/* Bottom action bar */}
       <View style={[styles.bottomBar, { borderColor: c.border, backgroundColor: c.bg }]}>
-        <Button title={step === 0 ? "Cancel" : "Back"} variant="secondary" onPress={onBack} />
+        <Button title={step === 0 ? 'Cancel' : 'Back'} variant="secondary" onPress={onBack} />
         {step < 2 ? (
           <Button title="Next" onPress={onNext} />
         ) : (
@@ -508,10 +487,10 @@ export function NewJobScreen() {
 
 const styles = StyleSheet.create({
   header: { marginBottom: 12 },
-  title: { fontSize: 28, fontWeight: "800" },
-  subtitle: { marginTop: 6, fontSize: 14, fontWeight: "600" },
+  title: { fontSize: 28, fontWeight: '800' },
+  subtitle: { marginTop: 6, fontSize: 14, fontWeight: '600' },
 
-  stepsRow: { flexDirection: "row", gap: 10, marginTop: 12 },
+  stepsRow: { flexDirection: 'row', gap: 10, marginTop: 12 },
 
   stepPill: {
     paddingHorizontal: 12,
@@ -532,7 +511,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    fontWeight: "700",
+    fontWeight: '700',
   },
 
   pickRow: {
@@ -540,8 +519,8 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingHorizontal: 12,
     paddingVertical: 12,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 10,
   },
 
@@ -549,8 +528,8 @@ const styles = StyleSheet.create({
     marginTop: 12,
     borderTopWidth: 1,
     paddingTop: 12,
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 10,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
 });

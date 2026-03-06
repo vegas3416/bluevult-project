@@ -1,5 +1,5 @@
-﻿import React from "react";
-import { SafeAreaView, StyleSheet, ViewStyle, useColorScheme } from "react-native";
+﻿import React from 'react';
+import { SafeAreaView, StyleSheet, ViewStyle, useColorScheme } from 'react-native';
 
 type Props = {
   children: React.ReactNode;
@@ -9,13 +9,13 @@ type Props = {
 
 export function Screen({ children, style, padded = true }: Props) {
   const scheme = useColorScheme();
-  const isDark = scheme === "dark";
+  const isDark = scheme === 'dark';
 
   return (
     <SafeAreaView
       style={[
         styles.base,
-        { backgroundColor: isDark ? "#0B0F14" : "#FFFFFF" },
+        { backgroundColor: isDark ? '#0B0F14' : '#FFFFFF' },
         padded && styles.padded,
         style,
       ]}

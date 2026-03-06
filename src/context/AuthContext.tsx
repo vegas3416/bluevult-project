@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useContext, useMemo, useState } from 'react';
 
 type AuthContextValue = {
   isLoggedIn: boolean;
@@ -17,7 +17,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       logIn: () => setIsLoggedIn(true),
       logOut: () => setIsLoggedIn(false),
     }),
-    [isLoggedIn]
+    [isLoggedIn],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -25,6 +25,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within an AuthProvider");
+  if (!ctx) throw new Error('useAuth must be used within an AuthProvider');
   return ctx;
 }
