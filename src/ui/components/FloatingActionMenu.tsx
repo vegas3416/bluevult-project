@@ -12,20 +12,28 @@ type FloatingActionMenuProps = {
   visible: boolean;
   onClose: () => void;
   actions: ActionItem[];
+  variant?: 'home' | 'customer';
 };
 
-export function FloatingActionMenu({ visible, onClose, actions }: FloatingActionMenuProps) {
-  const messageAction = actions.find(a => a.key === 'message');
-  const jobAction = actions.find(a => a.key === 'job');
-  const cameraAction = actions.find(a => a.key === 'camera');
-  const calendarAction = actions.find(a => a.key === 'calendar');
-
-  const orderedActions = [
-    { item: messageAction, style: styles.topLeft },
-    { item: jobAction, style: styles.topRight },
-    { item: cameraAction, style: styles.centerLeft },
-    { item: calendarAction, style: styles.centerRight },
-  ];
+export function FloatingActionMenu({
+  visible,
+  onClose,
+  actions,
+  variant = 'home',
+}: FloatingActionMenuProps) {
+  const orderedActions =
+    variant === 'customer'
+      ? [
+          { item: actions.find(a => a.key === 'image'), style: styles.customerTop },
+          { item: actions.find(a => a.key === 'job'), style: styles.customerBottomLeft },
+          { item: actions.find(a => a.key === 'calendar'), style: styles.customerBottomRight },
+        ]
+      : [
+          { item: actions.find(a => a.key === 'message'), style: styles.topLeft },
+          { item: actions.find(a => a.key === 'job'), style: styles.topRight },
+          { item: actions.find(a => a.key === 'camera'), style: styles.centerLeft },
+          { item: actions.find(a => a.key === 'calendar'), style: styles.centerRight },
+        ];
 
   return (
     <Modal visible={visible} transparent animationType="fade">
@@ -33,7 +41,10 @@ export function FloatingActionMenu({ visible, onClose, actions }: FloatingAction
         <Pressable style={styles.backdrop} onPress={onClose} />
 
         <View style={styles.clusterWrap} pointerEvents="box-none">
-          <View style={styles.clusterAnchor} pointerEvents="box-none">
+          <View
+            style={variant === 'customer' ? styles.customerAnchor : styles.clusterAnchor}
+            pointerEvents="box-none"
+          >
             {orderedActions.map(({ item, style }) => {
               if (!item) return null;
 
@@ -81,6 +92,12 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
 
+  customerAnchor: {
+    width: 180,
+    height: 140,
+    position: 'relative',
+  },
+
   actionButton: {
     position: 'absolute',
     width: 52,
@@ -96,23 +113,35 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
 
+  // Home 4-icon cluster
   topLeft: {
     top: 0,
     left: 44,
   },
-
   topRight: {
     top: 0,
     right: 44,
   },
-
   centerLeft: {
     top: 58,
     left: 0,
   },
-
   centerRight: {
     top: 58,
     right: 0,
+  },
+
+  // Customer 3-icon cluster
+  customerTop: {
+    top: 0,
+    left: 64,
+  },
+  customerBottomLeft: {
+    top: 58,
+    left: 14,
+  },
+  customerBottomRight: {
+    top: 58,
+    right: 14,
   },
 });

@@ -1,16 +1,24 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs, usePathname, useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import { FloatingActionMenu } from '../../src/ui/components/FloatingActionMenu';
 
 export default function TabsLayout() {
   const router = useRouter();
-  const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
 
-  const isHome = pathname === '/';
+  const [homeMenuOpen, setHomeMenuOpen] = useState(false);
+  const [customerMenuOpen, setCustomerMenuOpen] = useState(false);
+
+  const pathname = usePathname();
+
+  const isHome = pathname === '/' || pathname === '/(tabs)' || pathname === '/(tabs)/index';
+  const isCalendar = pathname === '/calendar' || pathname === '/(tabs)/calendar';
+  const isInbox = pathname === '/inbox' || pathname === '/(tabs)/inbox';
+  const isJobs = pathname === '/jobs' || pathname === '/(tabs)/jobs';
+  const isCustomerDetail =
+    pathname.startsWith('/customers/') || pathname.startsWith('/(tabs)/customers/');
 
   const homeActions = useMemo(
     () => [
@@ -38,9 +46,71 @@ export default function TabsLayout() {
     [router],
   );
 
+  const customerActions = useMemo(
+    () => [
+      {
+        key: 'image',
+        icon: 'camera-outline' as const,
+        onPress: () => {
+          Alert.alert('Add Image', 'Later this will add an image for this customer.');
+        },
+      },
+      {
+        key: 'job',
+        icon: 'briefcase-outline' as const,
+        onPress: () => router.push('/jobs/newjob'),
+      },
+      {
+        key: 'calendar',
+        icon: 'calendar-outline' as const,
+        onPress: () => {
+          Alert.alert(
+            'Add Calendar Item',
+            'Later this will create a calendar item tied to this customer.',
+          );
+        },
+      },
+    ],
+    [router],
+  );
+
+  const closeMenus = () => {
+    setHomeMenuOpen(false);
+    setCustomerMenuOpen(false);
+  };
+
   const handleCapturePress = () => {
+    if (!isHome && !isCustomerDetail) {
+      closeMenus();
+    }
+
     if (isHome) {
-      setMenuOpen(prev => !prev);
+      setCustomerMenuOpen(false);
+      setHomeMenuOpen(prev => !prev);
+      return;
+    }
+
+    if (isCustomerDetail) {
+      setHomeMenuOpen(false);
+      setCustomerMenuOpen(prev => !prev);
+      return;
+    }
+
+    if (isCalendar) {
+      Alert.alert('New Calendar Item', 'Later this will open the calendar input flow.');
+      return;
+    }
+
+    if (isInbox) {
+      Alert.alert(
+        'New Message',
+        'Later this will open the new message flow and ask who to message.',
+      );
+      return;
+    }
+
+    if (isJobs) {
+      router.push('/jobs/newjob');
       return;
     }
 
@@ -129,9 +199,17 @@ export default function TabsLayout() {
       </Tabs>
 
       <FloatingActionMenu
-        visible={menuOpen}
-        onClose={() => setMenuOpen(false)}
+        visible={homeMenuOpen}
+        onClose={() => setHomeMenuOpen(false)}
         actions={homeActions}
+        variant="home"
+      />
+
+      <FloatingActionMenu
+        visible={customerMenuOpen}
+        onClose={() => setCustomerMenuOpen(false)}
+        actions={customerActions}
+        variant="customer"
       />
     </>
   );
