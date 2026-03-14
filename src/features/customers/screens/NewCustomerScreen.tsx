@@ -1,26 +1,21 @@
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Button } from '../../../ui/components/Button';
-import { Card } from '../../../ui/components/Card';
 import { Screen } from '../../../ui/components/Screen';
 
-export function NewCustomerScreen() {
-  const router = useRouter();
+type NewCustomerScreenProps = {
+  onClose: () => void;
+};
 
+export function NewCustomerScreen({ onClose }: NewCustomerScreenProps) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
+  const [state, setState] = useState('');
   const [notes, setNotes] = useState('');
-
-  const handleBack = () => {
-    if (router.canGoBack()) return router.back();
-    return router.replace('/(tabs)');
-  };
 
   const handleSave = () => {
     if (!name.trim()) {
@@ -28,21 +23,26 @@ export function NewCustomerScreen() {
       return;
     }
 
+    // Later: save to backend / store
     Alert.alert(
       'Customer created',
       'Later this will save the customer and continue into the next step.',
-      [{ text: 'OK', onPress: handleBack }],
+      [
+        {
+          text: 'OK',
+          onPress: onClose,
+        },
+      ],
     );
   };
 
   return (
     <Screen>
-      <TopBar title="New Customer" onBack={handleBack} />
-
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8, paddingTop: 16 }}>
+        <Text style={styles.topTitle}>New Customer</Text>
+      </View>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        <Card style={styles.sectionCard}>
-          <Text style={styles.sectionTitle}>Customer Info</Text>
-
+        <View style={styles.sectionCard}>
           <Input label="Name" value={name} onChangeText={setName} placeholder="Customer name" />
           <Input label="Phone" value={phone} onChangeText={setPhone} placeholder="(555) 555-5555" />
           <Input
@@ -57,7 +57,16 @@ export function NewCustomerScreen() {
             onChangeText={setAddress}
             placeholder="123 Main St"
           />
-          <Input label="City" value={city} onChangeText={setCity} placeholder="Austin" />
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <View style={{ flex: 1 }}>
+              <Input label="City" value={city} onChangeText={setCity} placeholder="Austin" />
+            </View>
+
+            <View style={{ flex: 1 }}>
+              <Input label="State" value={state} onChangeText={setState} placeholder="TX" />
+            </View>
+          </View>
+
           <Input
             label="Notes"
             value={notes}
@@ -65,34 +74,17 @@ export function NewCustomerScreen() {
             placeholder="Anything important to know?"
             multiline
           />
-        </Card>
+        </View>
+      </ScrollView>
 
-        <View style={{ height: 16 }} />
-
+      {/*  Later: add best method to contact customer (phone, email, text, etc) but
+      will need to see if companies want to have that feature. */}
+      <View style={styles.buttonSpacing}>
         <Button title="Save Customer" onPress={handleSave} />
         <View style={{ height: 12 }} />
-        <Button title="Cancel" variant="secondary" onPress={handleBack} />
-
-        <View style={{ height: 24 }} />
-      </ScrollView>
+        <Button title="Cancel" variant="secondary" onPress={onClose} />
+      </View>
     </Screen>
-  );
-}
-
-function TopBar({ title, onBack }: { title: string; onBack: () => void }) {
-  return (
-    <View style={styles.topBar}>
-      <Pressable onPress={onBack} hitSlop={10} style={styles.backBtn}>
-        <Ionicons name="chevron-back" size={22} />
-        <Text style={styles.backText}>Back</Text>
-      </Pressable>
-
-      <Text numberOfLines={1} style={styles.topTitle}>
-        {title}
-      </Text>
-
-      <View style={styles.topBarSpacer} />
-    </View>
   );
 }
 
@@ -126,23 +118,8 @@ function Input({
 
 const styles = StyleSheet.create({
   scrollContent: {
-    paddingBottom: 12,
-  },
-
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 8,
-    marginBottom: 8,
-  },
-  backBtn: {
-    width: 72,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  backText: {
-    fontSize: 16,
-    fontWeight: '600',
+    marginTop: 8,
+    paddingBottom: 16,
   },
   topTitle: {
     flex: 1,
@@ -150,11 +127,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '800',
   },
-  topBarSpacer: {
-    width: 72,
+  buttonSpacing: {
+    paddingHorizontal: 18,
   },
 
   sectionCard: {
+    padding: 18,
     marginBottom: 14,
   },
   sectionTitle: {

@@ -18,32 +18,96 @@ import { Screen } from '../../../ui/components/Screen';
 import { getCustomerById } from '../../customers/data/customers.repository';
 import { getJobById, getJobImagesByJobId, getMessagesByJobId } from '../data/jobs.repository';
 
+type JobOrigin = 'customer' | 'jobs' | 'calendar' | 'inbox' | null;
+type CustomerOrigin = 'job' | 'jobs' | 'calendar' | 'inbox' | null;
+
 export function JobDetailScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ id?: string }>();
+  const params = useLocalSearchParams<{
+    id?: string;
+    origin?: string;
+    customerId?: string;
+    customerOrigin?: string;
+    customerJobId?: string;
+  }>();
+
   const id = params.id ?? '';
+  const customerId = params.customerId ? String(params.customerId) : null;
+  const customerJobId = params.customerJobId ? String(params.customerJobId) : null;
+
+  const origin: JobOrigin =
+    params.origin === 'customer'
+      ? 'customer'
+      : params.origin === 'jobs'
+        ? 'jobs'
+        : params.origin === 'calendar'
+          ? 'calendar'
+          : params.origin === 'inbox'
+            ? 'inbox'
+            : null;
+
+  const customerOrigin: CustomerOrigin =
+    params.customerOrigin === 'job'
+      ? 'job'
+      : params.customerOrigin === 'jobs'
+        ? 'jobs'
+        : params.customerOrigin === 'calendar'
+          ? 'calendar'
+          : params.customerOrigin === 'inbox'
+            ? 'inbox'
+            : null;
 
   const [draftMessage, setDraftMessage] = useState('');
 
   const job = useMemo(() => getJobById(String(id)), [id]);
+
   const customer = useMemo(() => {
     if (!job) return undefined;
     return getCustomerById(job.customerId);
   }, [job]);
+
   const messages = useMemo(() => getMessagesByJobId(String(id)), [id]);
   const images = useMemo(() => getJobImagesByJobId(String(id)), [id]);
 
   const handleBack = () => {
+    if (origin === 'customer' && customerId) {
+      return router.replace({
+        pathname: '/customers/[id]',
+        params: {
+          id: customerId,
+          origin: customerOrigin ?? undefined,
+          jobId: customerJobId ?? undefined,
+        },
+      });
+    }
+
+    if (origin === 'jobs') {
+      return router.replace('/jobs');
+    }
+
+    if (origin === 'calendar') {
+      return router.replace('/calendar');
+    }
+
+    if (origin === 'inbox') {
+      return router.replace('/inbox');
+    }
+
     if (router.canGoBack()) return router.back();
-    return router.replace('/(tabs)/jobs');
+
+    return router.replace('/jobs');
   };
 
   const handleOpenCustomer = () => {
     if (!customer) return;
 
     router.push({
-      pathname: '/(tabs)/customers/[id]',
-      params: { id: customer.id, origin: 'job', jobId: job?.id },
+      pathname: '/customers/[id]',
+      params: {
+        id: customer.id,
+        origin: 'job',
+        jobId: job?.id,
+      },
     });
   };
 

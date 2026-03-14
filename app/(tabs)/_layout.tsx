@@ -3,47 +3,76 @@ import { Tabs, usePathname, useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
-import { FloatingActionMenu } from '../../src/ui/components/FloatingActionMenu';
+import { NewCustomerModal } from '@/features/customers/components/NewCustomerModal';
+import {
+  NewCustomerModalProvider,
+  useNewCustomerModal,
+} from '@/features/customers/context/NewCustomerModalContext';
+import { FloatingActionMenu } from '@/ui/components/FloatingActionMenu';
 
-export default function TabsLayout() {
+function TabsLayoutInner() {
   const router = useRouter();
+  const pathname = usePathname();
+  const { open: openNewCustomerModal } = useNewCustomerModal();
 
   const [homeMenuOpen, setHomeMenuOpen] = useState(false);
   const [customerMenuOpen, setCustomerMenuOpen] = useState(false);
 
-  const pathname = usePathname();
+  const isHome = pathname === '/';
+  const isCalendar = pathname === '/calendar';
+  const isInbox = pathname === '/inbox';
+  const isJobsRoute = pathname === '/jobs' || pathname.startsWith('/jobs/');
+  const isCustomersRoute = pathname === '/customers' || pathname.startsWith('/customers/');
 
-  const isHome = pathname === '/' || pathname === '/(tabs)' || pathname === '/(tabs)/index';
-  const isCalendar = pathname === '/calendar' || pathname === '/(tabs)/calendar';
-  const isInbox = pathname === '/inbox' || pathname === '/(tabs)/inbox';
-  const isJobs = pathname === '/jobs' || pathname === '/(tabs)/jobs';
-  const isCustomerDetail =
-    pathname.startsWith('/customers/') || pathname.startsWith('/(tabs)/customers/');
+  const closeMenus = () => {
+    setHomeMenuOpen(false);
+    setCustomerMenuOpen(false);
+  };
 
   const homeActions = useMemo(
     () => [
       {
         key: 'camera',
         icon: 'camera-outline' as const,
-        onPress: () => router.push('/(tabs)/capture'),
+        onPress: () => {
+          closeMenus();
+          router.push('/capture');
+        },
       },
       {
         key: 'message',
         icon: 'chatbubble-ellipses-outline' as const,
-        onPress: () => router.push('/(tabs)/inbox'),
+        onPress: () => {
+          closeMenus();
+          router.push('/inbox');
+        },
+      },
+      {
+        key: 'customer',
+        icon: 'people-outline' as const,
+        onPress: () => {
+          closeMenus();
+          openNewCustomerModal();
+        },
       },
       {
         key: 'job',
         icon: 'briefcase-outline' as const,
-        onPress: () => router.push('/jobs/newjob'),
+        onPress: () => {
+          closeMenus();
+          router.push('/jobs/newjob');
+        },
       },
       {
         key: 'calendar',
         icon: 'calendar-outline' as const,
-        onPress: () => router.push('/(tabs)/calendar'),
+        onPress: () => {
+          closeMenus();
+          router.push('/calendar');
+        },
       },
     ],
-    [router],
+    [openNewCustomerModal, router],
   );
 
   const customerActions = useMemo(
@@ -52,18 +81,23 @@ export default function TabsLayout() {
         key: 'image',
         icon: 'camera-outline' as const,
         onPress: () => {
+          closeMenus();
           Alert.alert('Add Image', 'Later this will add an image for this customer.');
         },
       },
       {
         key: 'job',
         icon: 'briefcase-outline' as const,
-        onPress: () => router.push('/jobs/newjob'),
+        onPress: () => {
+          closeMenus();
+          router.push('/jobs/newjob');
+        },
       },
       {
         key: 'calendar',
         icon: 'calendar-outline' as const,
         onPress: () => {
+          closeMenus();
           Alert.alert(
             'Add Calendar Item',
             'Later this will create a calendar item tied to this customer.',
@@ -74,27 +108,20 @@ export default function TabsLayout() {
     [router],
   );
 
-  const closeMenus = () => {
-    setHomeMenuOpen(false);
-    setCustomerMenuOpen(false);
-  };
-
   const handleCapturePress = () => {
-    if (!isHome && !isCustomerDetail) {
-      closeMenus();
-    }
-
     if (isHome) {
       setCustomerMenuOpen(false);
       setHomeMenuOpen(prev => !prev);
       return;
     }
 
-    if (isCustomerDetail) {
+    if (isCustomersRoute) {
       setHomeMenuOpen(false);
       setCustomerMenuOpen(prev => !prev);
       return;
     }
+
+    closeMenus();
 
     if (isCalendar) {
       Alert.alert('New Calendar Item', 'Later this will open the calendar input flow.');
@@ -109,12 +136,12 @@ export default function TabsLayout() {
       return;
     }
 
-    if (isJobs) {
+    if (isJobsRoute) {
       router.push('/jobs/newjob');
       return;
     }
 
-    router.push('/(tabs)/capture');
+    router.push('/capture');
   };
 
   return (
@@ -184,14 +211,14 @@ export default function TabsLayout() {
         />
 
         <Tabs.Screen
-          name="settings"
+          name="customers"
           options={{
             href: null,
           }}
         />
 
         <Tabs.Screen
-          name="customers/[id]"
+          name="settings"
           options={{
             href: null,
           }}
@@ -211,7 +238,17 @@ export default function TabsLayout() {
         actions={customerActions}
         variant="customer"
       />
+
+      <NewCustomerModal />
     </>
+  );
+}
+
+export default function TabsLayout() {
+  return (
+    <NewCustomerModalProvider>
+      <TabsLayoutInner />
+    </NewCustomerModalProvider>
   );
 }
 

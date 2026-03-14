@@ -13,6 +13,7 @@ import {
   useColorScheme,
 } from 'react-native';
 
+import { useNewCustomerModal } from '@/features/customers/context/NewCustomerModalContext';
 import { Button } from '@/ui/components/Button';
 import { Card } from '../../src/ui/components/Card';
 import { Screen } from '../../src/ui/components/Screen';
@@ -21,6 +22,7 @@ import { SectionHeader } from '../../src/ui/components/SectionHeader';
 function useTextColors() {
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
+
   return {
     text: isDark ? '#EAF1FF' : '#111111',
     subtext: isDark ? '#A9B6CC' : '#555555',
@@ -28,6 +30,7 @@ function useTextColors() {
     border: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.08)',
     card: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
     chipBg: isDark ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.55)',
+    divider: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
   };
 }
 
@@ -35,6 +38,7 @@ type StatProps = { label: string; value: string };
 
 function Stat({ label, value }: StatProps) {
   const { text, muted } = useTextColors();
+
   return (
     <Card style={styles.statCard}>
       <Text style={[styles.statValue, { color: text }]}>{value}</Text>
@@ -93,10 +97,11 @@ function JobCard({ job, onPress }: { job: TodayJob; onPress: () => void }) {
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { text, subtext, muted, border, card } = useTextColors();
+  const { text, subtext, muted, border, card, divider } = useTextColors();
   const [query, setQuery] = useState('');
 
-  // Mock data for now (swap later with real API / TanStack Query)
+  const { open: openNewCustomerModal } = useNewCustomerModal();
+
   const todaysJobs: TodayJob[] = useMemo(
     () => [
       {
@@ -131,6 +136,7 @@ export default function HomeScreen() {
   const filteredJobs = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return todaysJobs;
+
     return todaysJobs.filter(j => {
       return (
         j.customerName.toLowerCase().includes(q) ||
@@ -161,7 +167,7 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
-        {/* Search (optional but feels "product") */}
+        {/* Search */}
         <View style={[styles.searchWrap, { backgroundColor: card, borderColor: border }]}>
           <TextInput
             value={query}
@@ -192,18 +198,27 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Quick Actions */}
+        {/* Divider above customer section */}
+        <View style={[styles.divider, { backgroundColor: divider }]} />
+
+        {/* Customer section */}
+        <SectionHeader title="Customers" />
         <Button
-          title="+ New Customer"
-          onPress={() => router.push('/customers/new')}
-          style={{ marginBottom: 0 }}
+          title="View Customers"
+          variant="secondary"
+          onPress={() => router.push('/(tabs)/customers')}
+          style={{ marginBottom: 10 }}
         />
+        <Button title="+ New Customer" onPress={openNewCustomerModal} style={{ marginBottom: 0 }} />
+
+        {/* Divider below customer section */}
+        <View style={[styles.divider, styles.dividerBottom, { backgroundColor: divider }]} />
 
         {/* Today's Jobs */}
         <SectionHeader
           title="Today's Jobs"
           actionText="View all"
-          onPressAction={() => router.push('/jobs')}
+          onPressAction={() => router.push('/(tabs)/jobs')}
         />
         <ScrollView
           horizontal
@@ -211,13 +226,9 @@ export default function HomeScreen() {
           contentContainerStyle={styles.jobsRow}
         >
           {filteredJobs.map(job => (
-            <JobCard
-              key={job.id}
-              job={job}
-              onPress={() => router.push('/(tabs)/calendar')}
-              // later: router.push(`/jobs/${job.id}`)
-            />
+            <JobCard key={job.id} job={job} onPress={() => router.push('/(tabs)/calendar')} />
           ))}
+
           {filteredJobs.length === 0 ? (
             <View style={[styles.emptyState, { borderColor: border, backgroundColor: card }]}>
               <Text style={{ color: text, fontWeight: '800' }}>No matches</Text>
@@ -233,10 +244,18 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { marginHorizontal: 12 },
-  header: { marginBottom: 12 },
-  title: { fontSize: 28, fontWeight: '700' },
-  subtitle: { marginTop: 6, fontSize: 14 },
+  screen: {
+    marginHorizontal: 12,
+  },
+
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+  },
+  subtitle: {
+    marginTop: 6,
+    fontSize: 14,
+  },
 
   headerRow: {
     flexDirection: 'row',
@@ -264,13 +283,39 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  row: { flexDirection: 'row', marginBottom: 16 },
-  flex1: { flex: 1 },
-  gutter: { marginHorizontal: 10 },
+  row: {
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  flex1: {
+    flex: 1,
+  },
+  gutter: {
+    marginHorizontal: 10,
+  },
 
-  statCard: { padding: 14 },
-  statValue: { fontSize: 20, fontWeight: '800' },
-  statLabel: { marginTop: 4, fontSize: 12, fontWeight: '600' },
+  divider: {
+    height: 1,
+    marginBottom: 14,
+    borderRadius: 999,
+  },
+  dividerBottom: {
+    marginTop: 14,
+    marginBottom: 14,
+  },
+
+  statCard: {
+    padding: 14,
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  statLabel: {
+    marginTop: 4,
+    fontSize: 12,
+    fontWeight: '600',
+  },
 
   jobsRow: {
     paddingVertical: 6,
@@ -339,6 +384,4 @@ const styles = StyleSheet.create({
     padding: 12,
     justifyContent: 'center',
   },
-
-  listItem: { fontSize: 14, marginBottom: 8 },
 });
